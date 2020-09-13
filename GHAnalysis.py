@@ -12,9 +12,9 @@ class Data:
         if isfirst == 1:
             self.TotalAnalyse(addr)
             self.SaveToLocal()
-        if addr is None and not os.path.exists('1.json') and not os.path.exists('2.json') and not os.path.exists(
-                '3.json'):
-            raise RuntimeError('error: init failed')
+        # if addr is None and not os.path.exists('1.json') and not os.path.exists('2.json') and not os.path.exists(
+        #         '3.json'):
+        #     raise RuntimeError('error: init failed')
 
         x = open('1.json', 'r', encoding = 'utf-8').read()
         #print(type(x))
