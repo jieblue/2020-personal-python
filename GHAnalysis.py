@@ -3,9 +3,6 @@ import json
 import os
 import argparse
 
-# u={}
-# r={}
-# ur={}
 class Data:
 
     def __init__(self,addr:int=None,isfirst:int =0):
@@ -20,18 +17,18 @@ class Data:
         # if addr is None: #and not os.path.exists('1.json') and not os.path.exists('2.json') and not os.path.exists(
         # #         '3.json'):
         #     raise RuntimeError('error: init failed')
-
-        x = open('user.json', 'r', encoding = 'utf-8').read()
-        #print(type(x))
-        self.localu = json.loads(x)
-        #self.localu = json.loads(x)
-        #print( type(json.loads(x)))
-        x = open('repo.json', 'r', encoding = 'utf-8').read()
-        # self.localr = r
-        self.localr = json.loads(x)
-        x = open('userepo.json', 'r', encoding = 'utf-8').read()
-        self.localur = json.loads(x)
-        #self.localur = ur
+        else:
+            x = open('user.json', 'r', encoding = 'utf-8').read()
+            #print(type(x))
+            self.localu = json.loads(x)
+            #self.localu = json.loads(x)
+            #print( type(json.loads(x)))
+            x = open('repo.json', 'r', encoding = 'utf-8').read()
+            # self.localr = r
+            self.localr = json.loads(x)
+            x = open('userepo.json', 'r', encoding = 'utf-8').read()
+            self.localur = json.loads(x)
+            #self.localur = ur
 
 
     def TotalAnalyse(self,addr:str):
