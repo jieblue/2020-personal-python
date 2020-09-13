@@ -5,7 +5,7 @@ import argparse
 
 
 class Data:
-    def __init__(self,addr:str=None,isfirst:int=0):
+    def __init__(self,addr:int=None,isfirst:int=0):
         self.uevent = {}
         self.revent = {}
         self.urevent = {}
@@ -84,7 +84,7 @@ class Data:
         with open('3.json', 'w', encoding = 'utf-8') as f:
             json.dump(self.urevent,f)
 
-            
+
     def QueryByUser(self, user:str, event: str):
         if not user in self.localu.keys():
             return 0
