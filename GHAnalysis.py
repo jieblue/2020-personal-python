@@ -18,15 +18,15 @@ class Data:
         # #         '3.json'):
         #     raise RuntimeError('error: init failed')
 
-        x = open('1.json', 'r', encoding = 'utf-8').read()
+        x = open('user.json', 'r', encoding = 'utf-8').read()
         #print(type(x))
         self.localu = json.loads(x)
         #self.localu = json.loads(x)
         #print( type(json.loads(x)))
-        x = open('2.json', 'r', encoding = 'utf-8').read()
+        x = open('repo.json', 'r', encoding = 'utf-8').read()
         self.localr = json.loads(x)
         #self.localr = json.loads(x)
-        x = open('3.json', 'r', encoding = 'utf-8').read()
+        x = open('userepo.json', 'r', encoding = 'utf-8').read()
        # self.localur = json.loads(x)
         self.localur = json.loads(x)
 
@@ -79,12 +79,13 @@ class Data:
 
     def SaveToLocal(self):
 
-        with open('1.json', 'w', encoding = 'utf-8') as f:
+        with open('user.json', 'w', encoding = 'utf-8') as f:
             json.dump(self.uevent,f)
-        with open('2.json', 'w', encoding = 'utf-8') as f:
+        with open('repo.json', 'w', encoding = 'utf-8') as f:
             json.dump(self.revent,f)
-        with open('3.json', 'w', encoding = 'utf-8') as f:
+        with open('userepo.json', 'w', encoding = 'utf-8') as f:
             json.dump(self.urevent,f)
+            f.close()
 
 
     def QueryByUser(self, user:str, event: str):
