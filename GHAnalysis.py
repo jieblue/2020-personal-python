@@ -5,7 +5,7 @@ import argparse
 
 class Data:
 
-    def __init__(self,addr:int=None,isfirst:int =0):
+    def __init__(self,isfirst:int =0, addr:int=None):
         self.uevent = {}
         self.revent = {}
         self.urevent = {}
@@ -18,17 +18,11 @@ class Data:
         # #         '3.json'):
         #     raise RuntimeError('error: init failed')
         else:
-            x = open('user.json', 'r', encoding = 'utf-8').read()
-            #print(type(x))
-            self.localu = json.loads(x)
-            #self.localu = json.loads(x)
-            #print( type(json.loads(x)))
-            x = open('repo.json', 'r', encoding = 'utf-8').read()
-            # self.localr = r
-            self.localr = json.loads(x)
-            x = open('userepo.json', 'r', encoding = 'utf-8').read()
-            self.localur = json.loads(x)
-            #self.localur = ur
+            self.localu={}
+            self.localr={}
+            self.localur={}
+            if self.readlocal() == False:
+                raise RuntimeError("file is not exist")
 
 
     def TotalAnalyse(self,addr:str):
@@ -76,11 +70,20 @@ class Data:
         #print(self.uevent.items())
        # print(revent.items())
 
+    def readlocal(self) -> bool:
+        if not os.path.exists('user.json') and not os.path.exists(
+                'repo.json') and not os.path.exists('userrepo.json'):
+            return False
+        x = open('user.json', 'r', encoding='utf-8').read()
+        self.localu = json.loads(x)
+        x = open('repo.json', 'r', encoding='utf-8').read()
+        self.localr = json.loads(x)
+        x = open('userepo.json', 'r', encoding='utf-8').read()
+        self.localur = json.loads(x)
+        return True
+
 
     def SaveToLocal(self):
-        u=self.uevent
-        r=self.revent
-        ur=self.urevent
         try:
             with open('user.json', 'w', encoding = 'utf-8') as f:
                 json.dump(self.uevent,f)
@@ -127,11 +130,11 @@ class Run:
 
     def analyse(self):
         if self.parser.parse_args().init:
-            self.data = Data(self.parser.parse_args().init, 1)
+            self.data = Data(1,self.parser.parse_args().init)
             return 0
         else:
-            if self.data is None:
-                self.data = Data()
+            #if self.data is None:
+            self.data = Data(0,None)
             if self.parser.parse_args().event:
                 if self.parser.parse_args().user:
                     if self.parser.parse_args().repo:
