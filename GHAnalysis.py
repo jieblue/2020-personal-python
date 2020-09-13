@@ -3,8 +3,11 @@ import json
 import os
 import argparse
 
-
+u={}
+r={}
+ur={}
 class Data:
+
     def __init__(self,addr:int=None,isfirst:int =0):
         self.uevent = {}
         self.revent = {}
@@ -18,17 +21,17 @@ class Data:
         # #         '3.json'):
         #     raise RuntimeError('error: init failed')
 
-        x = open('user.json', 'r', encoding = 'utf-8').read()
+        #x = open('user.json', 'r', encoding = 'utf-8').read()
         #print(type(x))
-        self.localu = json.loads(x)
+        self.localu = u
         #self.localu = json.loads(x)
         #print( type(json.loads(x)))
-        x = open('repo.json', 'r', encoding = 'utf-8').read()
-        self.localr = json.loads(x)
+       # x = open('repo.json', 'r', encoding = 'utf-8').read()
+        self.localr = r
         #self.localr = json.loads(x)
-        x = open('userepo.json', 'r', encoding = 'utf-8').read()
+        #x = open('userepo.json', 'r', encoding = 'utf-8').read()
        # self.localur = json.loads(x)
-        self.localur = json.loads(x)
+        self.localur = ur
 
 
     def TotalAnalyse(self,addr:str):
@@ -78,13 +81,19 @@ class Data:
 
 
     def SaveToLocal(self):
-
-        with open('user.json', 'w', encoding = 'utf-8') as f:
-            json.dump(self.uevent,f)
-        with open('repo.json', 'w', encoding = 'utf-8') as f:
-            json.dump(self.revent,f)
-        with open('userepo.json', 'w', encoding = 'utf-8') as f:
-            json.dump(self.urevent,f)
+        u=self.uevent
+        r=self.revent
+        ur=self.urevent
+        try:
+            with open('user.json', 'w', encoding = 'utf-8') as f:
+                json.dump(self.uevent,f)
+            with open('repo.json', 'w', encoding = 'utf-8') as f:
+                json.dump(self.revent,f)
+            with open('userepo.json', 'w', encoding = 'utf-8') as f:
+                json.dump(self.urevent,f)
+        except:
+            raise RuntimeError("save error")
+        finally:
             f.close()
 
 
