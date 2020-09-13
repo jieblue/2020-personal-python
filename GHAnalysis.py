@@ -5,16 +5,18 @@ import argparse
 
 
 class Data:
-    def __init__(self,addr:int=None,isfirst:int=0):
+    def __init__(self,addr:int=None,isfirst:int =0):
         self.uevent = {}
         self.revent = {}
         self.urevent = {}
         if isfirst == 1:
+            if(addr == None):
+                raise RuntimeError('error: init failed')
             self.TotalAnalyse(addr)
             self.SaveToLocal()
-        if addr is None: #and not os.path.exists('1.json') and not os.path.exists('2.json') and not os.path.exists(
-        #         '3.json'):
-            raise RuntimeError('error: init failed')
+        # if addr is None: #and not os.path.exists('1.json') and not os.path.exists('2.json') and not os.path.exists(
+        # #         '3.json'):
+        #     raise RuntimeError('error: init failed')
 
         x = open('1.json', 'r', encoding = 'utf-8').read()
         #print(type(x))
