@@ -26,7 +26,7 @@ class Data:
 
 
     def TotalAnalyse(self,addr:str):
-        for root, dic, files in os.walk("jdata"):
+        for root, dic, files in os.walk(addr):
             for f in files:
                 if f[-5:] == ".json":
                     jpath = f
