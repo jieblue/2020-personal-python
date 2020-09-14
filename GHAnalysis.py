@@ -95,7 +95,7 @@ class Data:
             raise RuntimeError("save error")
         finally:
             f.close()
-            raise RuntimeError("excuse me")
+            #raise RuntimeError("excuse me")
 
 
     def QueryByUser(self, user:str, event: str):
