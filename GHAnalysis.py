@@ -21,7 +21,7 @@ class Data:
             self.localu={}
             self.localr={}
             self.localur={}
-            if self.readlocal() == False:
+            if self.ReadLocal() == False:
                 raise RuntimeError("file is not exist")
 
 
@@ -45,22 +45,26 @@ class Data:
                     #print(type(dtmp))
                     #print(dtmp)
                     #print(isinstance(dtmp,dict))
-                    if not dtmp["type"] in ['PushEvent','IssueCommentEvent','IssuesEvent','PullRequestEvent']:
+                    if not dtmp["type"] in ['PushEvent','IssueCommentEvent',
+                                            'IssuesEvent','PullRequestEvent']:
                         continue
                     if not dtmp["actor"]["login"] in self.uevent.keys():
-                        event = {'PushEvent':0,'IssueCommentEvent':0,'IssuesEvent':0,'PullRequestEvent':0}
+                        event = {'PushEvent':0,'IssueCommentEvent':0,
+                                 'IssuesEvent':0,'PullRequestEvent':0}
                         self.uevent[dtmp["actor"]["login"]] = event
-                        #print(uevent.items())
+
                     if not dtmp["repo"]["name"] in self.revent.keys():
-                        event = {'PushEvent':0,'IssueCommentEvent':0,'IssuesEvent':0,'PullRequestEvent':0}
+                        event = {'PushEvent':0,'IssueCommentEvent':0,
+                                 'IssuesEvent':0,'PullRequestEvent':0}
                         self.revent[dtmp["repo"]["name"]] = event
-                        #print(revent.items())
-                    if not dtmp["actor"]["login"]+dtmp["repo"]["name"] in self.urevent.keys():
-                        event = {'PushEvent': 0, 'IssueCommentEvent': 0, 'IssuesEvent': 0, 'PullRequestEvent': 0}
-                        self.urevent[dtmp["actor"]["login"]+dtmp["repo"]["name"]] = event
+
+                    if not dtmp["actor"]["login"]+'&'+dtmp["repo"]["name"] in self.urevent.keys():
+                        event = {'PushEvent': 0, 'IssueCommentEvent': 0,
+                                 'IssuesEvent': 0, 'PullRequestEvent': 0}
+                        self.urevent[dtmp["actor"]["login"]+'&'+dtmp["repo"]["name"]] = event
                     self.uevent[dtmp["actor"]["login"]][dtmp['type']] += 1
                     self.revent[dtmp["repo"]["name"]][dtmp['type']] += 1
-                    self.urevent[dtmp["actor"]["login"] + dtmp["repo"]["name"]][dtmp['type']] += 1
+                    self.urevent[dtmp["actor"]["login"] +'&'+ dtmp["repo"]["name"]][dtmp['type']] += 1
                 else:
                     break
         except:
@@ -70,7 +74,7 @@ class Data:
         #print(self.uevent.items())
        # print(revent.items())
 
-    def readlocal(self) -> bool:
+    def ReadLocal(self) -> bool:
         if not os.path.exists('user.json') and not os.path.exists(
                 'repo.json') and not os.path.exists('userrepo.json'):
             return False
@@ -95,7 +99,6 @@ class Data:
             raise RuntimeError("save error")
         finally:
             f.close()
-            #raise RuntimeError("excuse me")
 
 
     def QueryByUser(self, user:str, event: str):
@@ -111,25 +114,25 @@ class Data:
 
 
     def QueryByUserAndRepo(self, user:str, repo:str, event: str):
-        if not self.localur.get(user+repo,0):
+        if not self.localur.get(user+'&'+repo,0):
             return 0
-        return self.localur[user+repo][event]
+        return self.localur[user+'&'+repo][event]
 
 
 class Run:
     def __init__(self):
         self.parser = argparse.ArgumentParser()
         self.data = None
-        self.argInit()
-        print(self.analyse())
+        self.ArgInit()
+        print(self.Analyse())
 
-    def argInit(self):
+    def ArgInit(self):
         self.parser.add_argument('-i', '--init')
         self.parser.add_argument('-u', '--user')
         self.parser.add_argument('-r', '--repo')
         self.parser.add_argument('-e', '--event')
 
-    def analyse(self):
+    def Analyse(self):
         if self.parser.parse_args().init:
             self.data = Data(1,self.parser.parse_args().init)
             return 0
@@ -140,7 +143,8 @@ class Run:
                 if self.parser.parse_args().user:
                     if self.parser.parse_args().repo:
                         res = self.data.QueryByUserAndRepo(
-                            self.parser.parse_args().user, self.parser.parse_args().repo, self.parser.parse_args().event)
+                            self.parser.parse_args().user, self.parser.parse_args().repo,
+                            self.parser.parse_args().event)
                     else:
                         res = self.data.QueryByUser(
                             self.parser.parse_args().user, self.parser.parse_args().event)
