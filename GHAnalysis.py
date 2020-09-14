@@ -5,11 +5,11 @@ import argparse
 
 class Data:
 
-    def __init__(self,isfirst:int =0, addr:int=None):
-        self.uevent = {}
-        self.revent = {}
-        self.urevent = {}
-        if isfirst == 1:
+    def __init__(self, isFirst:int =0, addr:int=None):
+        self.uEvent = {}
+        self.rEvent = {}
+        self.urEvent = {}
+        if isFirst == 1:
             if(addr == None):
                 raise RuntimeError('error: init failed')
             self.TotalAnalyse(addr)
@@ -18,24 +18,21 @@ class Data:
         # #         '3.json'):
         #     raise RuntimeError('error: init failed')
         else:
-            self.localu={}
-            self.localr={}
-            self.localur={}
+            self.localU={}
+            self.localR={}
+            self.localUR={}
             if self.ReadLocal() == False:
                 raise RuntimeError("file is not exist")
 
-
-    def TotalAnalyse(self,addr:str):
+    def TotalAnalyse(self,addr:str):#解析文件夹中的所有json
         for root, dic, files in os.walk(addr):
             for f in files:
                 if f[-5:] == ".json":
-                    jpath = f
-                    self.JsonAnalyse(addr,jpath)
+                    jsonPath = f
+                    self.JsonAnalyse(addr, jsonPath)
 
-
-
-    def JsonAnalyse(self,addr:str,jpath:str):
-        f = open(addr + '\\' + jpath,'r', encoding='utf-8')
+    def JsonAnalyse(self, addr:str, jPath:str):#单个json解析函数
+        f = open(addr + '\\' + jPath, 'r', encoding='utf-8')
         #f=open("data.json",'r',encoding='utf-8').read()
         try:
             while True:
@@ -48,75 +45,69 @@ class Data:
                     if not dtmp["type"] in ['PushEvent','IssueCommentEvent',
                                             'IssuesEvent','PullRequestEvent']:
                         continue
-                    if not dtmp["actor"]["login"] in self.uevent.keys():
+                    if not dtmp["actor"]["login"] in self.uEvent.keys():
                         event = {'PushEvent':0,'IssueCommentEvent':0,
                                  'IssuesEvent':0,'PullRequestEvent':0}
-                        self.uevent[dtmp["actor"]["login"]] = event
+                        self.uEvent[dtmp["actor"]["login"]] = event
 
-                    if not dtmp["repo"]["name"] in self.revent.keys():
+                    if not dtmp["repo"]["name"] in self.rEvent.keys():
                         event = {'PushEvent':0,'IssueCommentEvent':0,
                                  'IssuesEvent':0,'PullRequestEvent':0}
-                        self.revent[dtmp["repo"]["name"]] = event
+                        self.rEvent[dtmp["repo"]["name"]] = event
 
-                    if not dtmp["actor"]["login"]+'&'+dtmp["repo"]["name"] in self.urevent.keys():
+                    if not dtmp["actor"]["login"]+'&'+dtmp["repo"]["name"] in self.urEvent.keys():
                         event = {'PushEvent': 0, 'IssueCommentEvent': 0,
                                  'IssuesEvent': 0, 'PullRequestEvent': 0}
-                        self.urevent[dtmp["actor"]["login"]+'&'+dtmp["repo"]["name"]] = event
-                    self.uevent[dtmp["actor"]["login"]][dtmp['type']] += 1
-                    self.revent[dtmp["repo"]["name"]][dtmp['type']] += 1
-                    self.urevent[dtmp["actor"]["login"] +'&'+ dtmp["repo"]["name"]][dtmp['type']] += 1
+                        self.urEvent[dtmp["actor"]["login"] + '&' + dtmp["repo"]["name"]] = event
+                    self.uEvent[dtmp["actor"]["login"]][dtmp['type']] += 1
+                    self.rEvent[dtmp["repo"]["name"]][dtmp['type']] += 1
+                    self.urEvent[dtmp["actor"]["login"] + '&' + dtmp["repo"]["name"]][dtmp['type']] += 1
                 else:
                     break
         except:
             pass
         finally:
             f.close()
-        #print(self.uevent.items())
-       # print(revent.items())
 
-    def ReadLocal(self) -> bool:
+    def ReadLocal(self) -> bool:#判断数据是否成功存在本地
         if not os.path.exists('user.json') and not os.path.exists(
                 'repo.json') and not os.path.exists('userrepo.json'):
             return False
         x = open('user.json', 'r', encoding='utf-8').read()
-        self.localu = json.loads(x)
+        self.localU = json.loads(x)
         x = open('repo.json', 'r', encoding='utf-8').read()
-        self.localr = json.loads(x)
+        self.localR = json.loads(x)
         x = open('userepo.json', 'r', encoding='utf-8').read()
-        self.localur = json.loads(x)
+        self.localUR = json.loads(x)
         return True
-
 
     def SaveToLocal(self):
         try:
             with open('user.json', 'w', encoding = 'utf-8') as f:
-                json.dump(self.uevent,f)
+                json.dump(self.uEvent, f)
             with open('repo.json', 'w', encoding = 'utf-8') as f:
-                json.dump(self.revent,f)
+                json.dump(self.rEvent, f)
             with open('userepo.json', 'w', encoding = 'utf-8') as f:
-                json.dump(self.urevent,f)
+                json.dump(self.urEvent, f)
         except:
             raise RuntimeError("save error")
         finally:
             f.close()
 
-
     def QueryByUser(self, user:str, event: str):
-        if not user in self.localu.keys():
+        if not user in self.localU.keys():
             return 0
-        return self.localu[user][event]
-
+        return self.localU[user][event]
 
     def QueryByRepo(self, repo: str, event: str):
-        if not self.localr.get(repo, 0):
+        if not self.localR.get(repo, 0):
             return 0
-        return self.localr[repo][event]
-
+        return self.localR[repo][event]
 
     def QueryByUserAndRepo(self, user:str, repo:str, event: str):
-        if not self.localur.get(user+'&'+repo,0):
+        if not self.localUR.get(user + '&' + repo, 0):
             return 0
-        return self.localur[user+'&'+repo][event]
+        return self.localUR[user + '&' + repo][event]
 
 
 class Run:
