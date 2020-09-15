@@ -2,6 +2,9 @@
 import json
 import os
 import argparse
+from concurrent.futures.thread import ThreadPoolExecutor
+from multiprocessing.pool import ThreadPool
+
 
 class Data:
 
@@ -14,9 +17,7 @@ class Data:
                 raise RuntimeError('error: init failed')
             self.TotalAnalyse(addr)
             self.SaveToLocal()
-        # if addr is None: #and not os.path.exists('1.json') and not os.path.exists('2.json') and not os.path.exists(
-        # #         '3.json'):
-        #     raise RuntimeError('error: init failed')
+
         else:
             self.localU={}
             self.localR={}
@@ -28,10 +29,11 @@ class Data:
         for root, dic, files in os.walk(addr):
             for f in files:
                 if f[-5:] == ".json":
-                    jsonPath = f
-                    self.JsonAnalyse(addr, jsonPath)
+                    jPath = f
+                    self.JsonAnalyse(addr,jPath)
 
-    def JsonAnalyse(self, addr:str, jPath:str):#单个json解析函数
+
+    def JsonAnalyse(self, addr:str,jPath:str):#单个json解析函数
         f = open(addr + '\\' + jPath, 'r', encoding='utf-8')
         #f=open("data.json",'r',encoding='utf-8').read()
         try:
@@ -39,9 +41,7 @@ class Data:
                 stmp = f.readline()
                 if stmp:
                     dtmp = json.loads(stmp)
-                    #print(type(dtmp))
-                    #print(dtmp)
-                    #print(isinstance(dtmp,dict))
+
                     if not dtmp["type"] in ['PushEvent','IssueCommentEvent',
                                             'IssuesEvent','PullRequestEvent']:
                         continue

@@ -130,3 +130,5 @@ dmypy.json
 /json/
 *.bat
 *.json
+/test_g.py
+/.pytest_cache/
