@@ -13,7 +13,7 @@ class Data:
         self.uEvent = {}
         self.rEvent = {}
         self.urEvent = {}
-        if isFirst == 1:
+        if isFirst == 1:##第一次初始化
             if(addr == None):
                 raise RuntimeError('error: init failed')
             self.TotalAnalyse(addr)
@@ -39,38 +39,39 @@ class Data:
             while True:
                 stmp = f.readline()
                 if stmp:
-                    pattern = re.compile('"login":".*?",')
+                    pattern = re.compile('"login":".*?",')##以下3段采用正则表达式
                     res=pattern.search(stmp).group(0)
-                    rkey1 = res[9:-2]
+                    rLogin = res[9:-2]
 
                     pattern = re.compile('"name":".*?",')
                     res = pattern.search(stmp).group(0)
-                    rkey2 = res[8:-2]
+                    rName = res[8:-2]
 
                     pattern = re.compile('"type":".*?",')
                     res = pattern.search(stmp).group(0)
-                    rkey3 = res[8:-2]
+                    rEvent = res[8:-2]
 
-                    if not rkey3 in ['PushEvent','IssueCommentEvent',
+                    if not rEvent in ['PushEvent', 'IssueCommentEvent',
                                             'IssuesEvent','PullRequestEvent']:
                         continue
-                    if not rkey1 in self.uEvent.keys():
+                    if not rLogin in self.uEvent.keys():##没有即跳过
                         event = {'PushEvent':0,'IssueCommentEvent':0,
                                  'IssuesEvent':0,'PullRequestEvent':0}
-                        self.uEvent[rkey1] = event
+                        self.uEvent[rLogin] = event
 
-                    if not rkey2 in self.rEvent.keys():
+                    if not rName in self.rEvent.keys():##初始化
                         event = {'PushEvent':0,'IssueCommentEvent':0,
                                  'IssuesEvent':0,'PullRequestEvent':0}
-                        self.rEvent[rkey2] = event
+                        self.rEvent[rName] = event
 
-                    if not rkey1+'&'+rkey2 in self.urEvent.keys():
+                    if not rLogin + '&' + rName in self.urEvent.keys():
                         event = {'PushEvent': 0, 'IssueCommentEvent': 0,
                                  'IssuesEvent': 0, 'PullRequestEvent': 0}
-                        self.urEvent[rkey1 + '&' + rkey2] = event
-                    self.uEvent[rkey1][rkey3] += 1
-                    self.rEvent[rkey2][rkey3] += 1
-                    self.urEvent[rkey1 + '&' + rkey2][rkey3] += 1
+                        self.urEvent[rLogin + '&' + rName] = event
+                        ##更新
+                    self.uEvent[rLogin][rEvent] += 1
+                    self.rEvent[rName][rEvent] += 1
+                    self.urEvent[rLogin + '&' + rName][rEvent] += 1
                 else:
                     break
         except:
