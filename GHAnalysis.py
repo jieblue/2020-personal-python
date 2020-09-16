@@ -1,6 +1,7 @@
 
 import json
 import os
+import re
 import argparse
 from concurrent.futures.thread import ThreadPoolExecutor
 from multiprocessing.pool import ThreadPool
@@ -32,36 +33,44 @@ class Data:
                     jPath = f
                     self.JsonAnalyse(addr,jPath)
 
-
     def JsonAnalyse(self, addr:str,jPath:str):#单个json解析函数
         f = open(addr + '\\' + jPath, 'r', encoding='utf-8')
-        #f=open("data.json",'r',encoding='utf-8').read()
         try:
             while True:
                 stmp = f.readline()
                 if stmp:
-                    dtmp = json.loads(stmp)
+                    pattern = re.compile('"login":".*?",')
+                    res=pattern.search(stmp).group(0)
+                    rkey1 = res[9:-2]
 
-                    if not dtmp["type"] in ['PushEvent','IssueCommentEvent',
+                    pattern = re.compile('"name":".*?",')
+                    res = pattern.search(stmp).group(0)
+                    rkey2 = res[8:-2]
+
+                    pattern = re.compile('"type":".*?",')
+                    res = pattern.search(stmp).group(0)
+                    rkey3 = res[8:-2]
+
+                    if not rkey3 in ['PushEvent','IssueCommentEvent',
                                             'IssuesEvent','PullRequestEvent']:
                         continue
-                    if not dtmp["actor"]["login"] in self.uEvent.keys():
+                    if not rkey1 in self.uEvent.keys():
                         event = {'PushEvent':0,'IssueCommentEvent':0,
                                  'IssuesEvent':0,'PullRequestEvent':0}
-                        self.uEvent[dtmp["actor"]["login"]] = event
+                        self.uEvent[rkey1] = event
 
-                    if not dtmp["repo"]["name"] in self.rEvent.keys():
+                    if not rkey2 in self.rEvent.keys():
                         event = {'PushEvent':0,'IssueCommentEvent':0,
                                  'IssuesEvent':0,'PullRequestEvent':0}
-                        self.rEvent[dtmp["repo"]["name"]] = event
+                        self.rEvent[rkey2] = event
 
-                    if not dtmp["actor"]["login"]+'&'+dtmp["repo"]["name"] in self.urEvent.keys():
+                    if not rkey1+'&'+rkey2 in self.urEvent.keys():
                         event = {'PushEvent': 0, 'IssueCommentEvent': 0,
                                  'IssuesEvent': 0, 'PullRequestEvent': 0}
-                        self.urEvent[dtmp["actor"]["login"] + '&' + dtmp["repo"]["name"]] = event
-                    self.uEvent[dtmp["actor"]["login"]][dtmp['type']] += 1
-                    self.rEvent[dtmp["repo"]["name"]][dtmp['type']] += 1
-                    self.urEvent[dtmp["actor"]["login"] + '&' + dtmp["repo"]["name"]][dtmp['type']] += 1
+                        self.urEvent[rkey1 + '&' + rkey2] = event
+                    self.uEvent[rkey1][rkey3] += 1
+                    self.rEvent[rkey2][rkey3] += 1
+                    self.urEvent[rkey1 + '&' + rkey2][rkey3] += 1
                 else:
                     break
         except:
@@ -151,4 +160,4 @@ class Run:
 
 if __name__ == '__main__':
 
-    run = Run()
+   run = Run()
