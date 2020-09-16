@@ -91,7 +91,7 @@ class Data:
         self.localUR = json.loads(x)
         return True
 
-    def SaveToLocal(self):
+    def SaveToLocal(self):##保存在本地
         try:
             with open('user.json', 'w', encoding = 'utf-8') as f:
                 json.dump(self.uEvent, f)
